@@ -1,41 +1,30 @@
 import React, { useState } from "react";
 
 function Form ({postImage, setPostImage}){
-    const [file, setFile] = useState()
-    const [title, setTitle] = useState("")  
-    const [fdata, setFdata] = useState({
-        title: '',
-        file: {}
-    })
-
-    function handleChange(e) {
-        // setFile(event.target.files[0])
-        // setTitle(event.target.title.value)
-        let name = e.target.name 
-        let value = e.target.value
-        setFdata({[name]: value})
-    }
 
     function handleSubmit(e){
         e.preventDefault() 
 
         const formData = new FormData()
-        formData.append("title", title)
-        formData.append("image", file) 
+        formData.append("title", e.target.title.value)
+        formData.append("image", e.target.image.files[0]) 
+        formData.append("pdf", e.target.pdf.files[0]) 
 
-        const data = {
-            title: e.target.title.value,
-            image: e.target.image.files[0]
-        }
-
-        console.log(fdata)
+        fetch("/posts",{
+            method: "POST",
+            body: formData
+        })
+        .then(res=>res.json())
+        .then(data=>setPostImage(data))
+        // console.log(formData.get("title"))
     }
     return (
         <div>
             <h2>Upload form</h2> 
             <form onSubmit={handleSubmit}>
-                <input type={'text'} name="title" onChange={handleChange}/>
-                <input type={'file'} name="image" onChange={handleChange}/>
+                <input type={'text'} name="title" />
+                <input type={'file'} name="image" />
+                <input type={'file'} name="pdf" />
                 <input type={'submit'} value="Post" />
             </form>
         </div>
